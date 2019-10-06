@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/hex"
 	"errors"
 	"io/ioutil"
 	"net/url"
@@ -29,12 +28,16 @@ func makeLinker(directory, appURL, hashMode string) linker {
 
 func (repo *linker) dataPart(piece string) (string, error) {
 	hash, err := multihash.EncodeName([]byte(piece), repo.hashMode)
-
 	if err != nil {
 		return "", err
 	}
 
-	return hex.EncodeToString(hash), nil
+	mh, err := multihash.Sum(hash, multihash.Names[repo.hashMode], -1)
+	if err != nil {
+		return "", err
+	}
+
+	return mh.B58String(), nil
 }
 
 func (repo *linker) localPath(pieces ...string) string {

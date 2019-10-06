@@ -51,4 +51,4 @@ curl -X POST -d "link=https://example.com/foo?bar" "https://shortener.r.albinodr
 
 Output:
 
-`https://shortener.r.albinodrought.com/l/121b68747470733a2f2f6578616d706c652e636f6d2f666f6f3f626172`
+`https://shortener.r.albinodrought.com/l/QmUNkts6uiHKd5TzaPTbNjGW1LADRUpHa7AfUZqxkbz5Sj`
