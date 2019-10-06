@@ -9,6 +9,18 @@
 
 Barebones link "shortener" using multihashes: identical URLs will always shorten to the same shortened links.
 
+
+## Shortening
+
+```
+curl -X POST -d "link=https://example.com/foo?bar" "https://your.shortener/shorten"
+```
+
+Output:
+
+`https://your.shortener/l/QmUNkts6uiHKd5TzaPTbNjGW1LADRUpHa7AfUZqxkbz5Sj`
+
+
 ## Building
 
 ### Without Docker
@@ -25,7 +37,7 @@ go build
 ## Running
 
 ```
-CREAMY_APP_URL="https://shortener.r.albinodrought.com/" \
+CREAMY_APP_URL="https://your.shortener/" \
 CREAMY_DATA_PATH=/data \
 CREAMY_HASH_MODE=sha2-256 \
 CREAMY_HTTP_PORT=80 \
@@ -42,13 +54,3 @@ CREAMY_POPULATED_HOSTS=localhost,example.com \
 - `CREAMY_HTTP_PORT`: port to listen on, defaults to `3000`
 
 - `CREAMY_POPULATED_HOSTS`: hosts (including port) to allow link shortening for, defaults to `localhost`
-
-## Shortening
-
-```
-curl -X POST -d "link=https://example.com/foo?bar" "https://shortener.r.albinodrought.com/shorten"
-```
-
-Output:
-
-`https://shortener.r.albinodrought.com/l/QmUNkts6uiHKd5TzaPTbNjGW1LADRUpHa7AfUZqxkbz5Sj`
