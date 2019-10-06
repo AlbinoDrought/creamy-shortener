@@ -89,7 +89,8 @@ func welcome(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	linkRepo = linker{localDataPath, appURL}
+	linkRepo = makeLinker(localDataPath, appURL)
+
 	for _, host := range hosts {
 		parsedHost, err := url.Parse("https://" + host)
 		if err != nil {

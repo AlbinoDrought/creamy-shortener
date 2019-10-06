@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/hex"
+	"errors"
 	"io/ioutil"
 	"net/url"
 	"os"
@@ -11,8 +12,17 @@ import (
 )
 
 type linker struct {
-	directory string
-	appURL    string
+	directory    string
+	appURL       string
+	allowedHosts []string
+}
+
+func makeLinker(directory, appURL string) linker {
+	return linker{
+		directory,
+		appURL,
+		[]string{},
+	}
 }
 
 func (repo *linker) dataPart(piece string) (string, error) {
@@ -40,29 +50,20 @@ func (repo *linker) dataPath(category, value string) (string, error) {
 }
 
 func (repo *linker) Allowed(url *url.URL) error {
-	hostPath, err := repo.dataPath("host", url.Host)
+	host := url.Host
 
-	if err != nil {
-		return err
+	for _, allowedHost := range repo.allowedHosts {
+		if host == allowedHost {
+			return nil
+		}
 	}
 
-	_, err = os.Stat(hostPath)
-
-	return err
+	return errors.New("host not allowed")
 }
 
 func (repo *linker) Allow(host string) error {
-	hostPath, err := repo.dataPath("host", host)
-	if err != nil {
-		return err
-	}
-
-	err = os.MkdirAll(path.Dir(hostPath), os.ModePerm)
-	if err != nil {
-		return err
-	}
-
-	return ioutil.WriteFile(hostPath, []byte(host), os.ModePerm)
+	repo.allowedHosts = append(repo.allowedHosts, host)
+	return nil
 }
 
 func (repo *linker) Shorten(link *url.URL) (string, error) {
