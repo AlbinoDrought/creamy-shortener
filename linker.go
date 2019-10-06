@@ -2,24 +2,25 @@ package main
 
 import (
 	"errors"
-	"io/ioutil"
 	"net/url"
 	"os"
 	"path"
+
+	"github.com/spf13/afero"
 
 	"github.com/multiformats/go-multihash"
 )
 
 type linker struct {
-	directory    string
+	fs           afero.Fs
 	appURL       string
 	hashMode     string
 	allowedHosts []string
 }
 
-func makeLinker(directory, appURL, hashMode string) linker {
+func makeLinker(fs afero.Fs, appURL, hashMode string) linker {
 	return linker{
-		directory,
+		fs,
 		appURL,
 		hashMode,
 		[]string{},
@@ -38,20 +39,6 @@ func (repo *linker) dataPart(piece string) (string, error) {
 	}
 
 	return mh.B58String(), nil
-}
-
-func (repo *linker) localPath(pieces ...string) string {
-	piecePath := path.Join(pieces...)
-	return path.Join(repo.directory, piecePath)
-}
-
-func (repo *linker) dataPath(category, value string) (string, error) {
-	dataPart, err := repo.dataPart(value)
-	if err != nil {
-		return "", err
-	}
-
-	return repo.localPath(category, dataPart), nil
 }
 
 func (repo *linker) Allowed(url *url.URL) error {
@@ -77,20 +64,16 @@ func (repo *linker) Shorten(link *url.URL) (string, error) {
 	}
 
 	linkString := link.String()
-	hostPath, err := repo.dataPath("link", linkString)
-
+	linkDataPart, err := repo.dataPart(linkString)
 	if err != nil {
 		return "", err
 	}
 
-	os.MkdirAll(path.Dir(hostPath), os.ModePerm)
+	hostPath := path.Join("link", linkDataPart)
 
-	err = ioutil.WriteFile(hostPath, []byte(linkString), os.ModePerm)
-	if err != nil {
-		return "", err
-	}
+	repo.fs.MkdirAll(path.Dir(hostPath), os.ModePerm)
 
-	shortenedPart, err := repo.dataPart(linkString)
+	err = afero.WriteFile(repo.fs, hostPath, []byte(linkString), os.ModePerm)
 	if err != nil {
 		return "", err
 	}
@@ -99,15 +82,15 @@ func (repo *linker) Shorten(link *url.URL) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	fullURL.Path = "/l/" + shortenedPart
+	fullURL.Path = "/l/" + linkDataPart
 
 	return fullURL.String(), nil
 }
 
 func (repo *linker) Expand(shortenedPart string) (*url.URL, error) {
-	hostPath := repo.localPath("link", shortenedPart)
+	hostPath := path.Join("link", shortenedPart)
 
-	contents, err := ioutil.ReadFile(hostPath)
+	contents, err := afero.ReadFile(repo.fs, hostPath)
 	if err != nil {
 		return nil, err
 	}

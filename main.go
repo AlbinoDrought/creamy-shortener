@@ -7,6 +7,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/spf13/afero"
+
 	"github.com/multiformats/go-multihash"
 
 	"github.com/gorilla/mux"
@@ -97,7 +99,7 @@ func main() {
 		log.Fatal("invalid hash mode", hashMode)
 	}
 
-	linkRepo = makeLinker(localDataPath, appURL, hashMode)
+	linkRepo = makeLinker(afero.NewBasePathFs(afero.NewOsFs(), localDataPath), appURL, hashMode)
 
 	for _, host := range hosts {
 		parsedHost, err := url.Parse("https://" + host)
