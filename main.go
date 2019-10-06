@@ -7,6 +7,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/multiformats/go-multihash"
+
 	"github.com/gorilla/mux"
 )
 
@@ -91,6 +93,10 @@ func welcome(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	if !multihash.ValidCode(multihash.Names[hashMode]) {
+		log.Fatal("invalid hash mode", hashMode)
+	}
+
 	linkRepo = makeLinker(localDataPath, appURL, hashMode)
 
 	for _, host := range hosts {
