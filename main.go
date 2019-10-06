@@ -14,6 +14,7 @@ var appURL string
 var port string
 var localDataPath string
 var hosts []string
+var hashMode string
 
 var linkRepo linker
 
@@ -27,6 +28,7 @@ func envDefault(name string, backup string) string {
 
 func init() {
 	appURL = envDefault("CREAMY_APP_URL", "")
+	hashMode = envDefault("CREAMY_HASH_MODE", "sha2-256")
 	port = envDefault("CREAMY_HTTP_PORT", "3000")
 	localDataPath = envDefault("CREAMY_DATA_PATH", "./data")
 	hosts = strings.Split(envDefault("CREAMY_POPULATED_HOSTS", "localhost"), ",")
@@ -89,7 +91,7 @@ func welcome(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	linkRepo = makeLinker(localDataPath, appURL)
+	linkRepo = makeLinker(localDataPath, appURL, hashMode)
 
 	for _, host := range hosts {
 		parsedHost, err := url.Parse("https://" + host)

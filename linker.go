@@ -14,19 +14,21 @@ import (
 type linker struct {
 	directory    string
 	appURL       string
+	hashMode     string
 	allowedHosts []string
 }
 
-func makeLinker(directory, appURL string) linker {
+func makeLinker(directory, appURL, hashMode string) linker {
 	return linker{
 		directory,
 		appURL,
+		hashMode,
 		[]string{},
 	}
 }
 
 func (repo *linker) dataPart(piece string) (string, error) {
-	hash, err := multihash.EncodeName([]byte(piece), "sha2-256")
+	hash, err := multihash.EncodeName([]byte(piece), repo.hashMode)
 
 	if err != nil {
 		return "", err

@@ -27,6 +27,7 @@ go build
 ```
 CREAMY_APP_URL="https://shortener.r.albinodrought.com" \
 CREAMY_DATA_PATH=/data \
+CREAMY_HASH_MODE=sha2-256 \
 CREAMY_HTTP_PORT=80 \
 CREAMY_POPULATED_HOSTS=localhost,google.com \
 ./creamy-shortener
@@ -35,6 +36,8 @@ CREAMY_POPULATED_HOSTS=localhost,google.com \
 - `CREAMY_APP_URL`: the externally-accessible URL this instance can be reached at
 
 - `CREAMY_DATA_PATH`: the path to persist all data, defaults to `./data`
+
+- `CREAMY_HASH_MODE`: [multihash mode](https://github.com/multiformats/multicodec/blob/8dd1bfb9a953da79c3ec5962a2a3dcb94e0cc376/table.csv) to use, defaults to `sha2-256`
 
 - `CREAMY_HTTP_PORT`: port to listen on, defaults to `3000`
 
