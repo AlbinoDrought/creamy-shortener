@@ -1,5 +1,12 @@
 # Creamy Shortener
 
+<a href="https://hub.docker.com/r/albinodrought/creamy-shortener">
+  <img alt="albinodrought/creamy-shortener Docker Pulls" src="https://img.shields.io/docker/pulls/albinodrought/creamy-shortener">
+</a>
+<a href="https://github.com/AlbinoDrought/creamy-shortener/blob/master/LICENSE">
+  <img alt="AGPL-3.0 License" src="https://img.shields.io/github/license/AlbinoDrought/creamy-shortener">
+</a>
+
 Barebones link "shortener" using multihashes: identical URLs will always shorten to the same shortened links.
 
 ## Building
