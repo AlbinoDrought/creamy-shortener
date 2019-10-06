@@ -18,7 +18,7 @@ curl -X POST -d "link=https://example.com/foo?bar" "https://your.shortener/short
 
 Output:
 
-`https://your.shortener/l/QmUNkts6uiHKd5TzaPTbNjGW1LADRUpHa7AfUZqxkbz5Sj`
+`https://your.shortener/l/Qma3YMYZUNAY7Dp7UhtZfqKAfsLkHyF9jf1yFXjZbYjWqt`
 
 
 ## Building
