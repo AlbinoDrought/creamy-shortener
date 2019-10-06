@@ -25,7 +25,7 @@ go build
 ## Running
 
 ```
-CREAMY_APP_URL="https://shortener.r.albinodrought.com" \
+CREAMY_APP_URL="https://shortener.r.albinodrought.com/" \
 CREAMY_DATA_PATH=/data \
 CREAMY_HASH_MODE=sha2-256 \
 CREAMY_HTTP_PORT=80 \
@@ -33,7 +33,7 @@ CREAMY_POPULATED_HOSTS=localhost,google.com \
 ./creamy-shortener
 ```
 
-- `CREAMY_APP_URL`: the externally-accessible URL this instance can be reached at
+- `CREAMY_APP_URL`: the externally-accessible URL this instance can be reached at, defaults to `http://localhost:3000/`
 
 - `CREAMY_DATA_PATH`: the path to persist all data, defaults to `./data`
 

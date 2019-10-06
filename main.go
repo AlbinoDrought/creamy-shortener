@@ -27,7 +27,7 @@ func envDefault(name string, backup string) string {
 }
 
 func init() {
-	appURL = envDefault("CREAMY_APP_URL", "")
+	appURL = envDefault("CREAMY_APP_URL", "http://localhost:3000/")
 	hashMode = envDefault("CREAMY_HASH_MODE", "sha2-256")
 	port = envDefault("CREAMY_HTTP_PORT", "3000")
 	localDataPath = envDefault("CREAMY_DATA_PATH", "./data")
