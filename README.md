@@ -7,7 +7,7 @@
   <img alt="AGPL-3.0 License" src="https://img.shields.io/github/license/AlbinoDrought/creamy-shortener">
 </a>
 
-Barebones link "shortener" using multihashes: identical URLs will always shorten to the same shortened links.
+Barebones link "shortener" using [multihashes](https://github.com/multiformats/multicodec): identical URLs will always shorten to the same shortened links.
 
 
 ## Shortening
