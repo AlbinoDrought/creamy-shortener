@@ -7,7 +7,12 @@ import (
 	"os"
 	"strings"
 
-	"github.com/multiformats/go-multihash"
+	"github.com/AlbinoDrought/creamy-shortener/linker"
+	"github.com/AlbinoDrought/creamy-shortener/linker/guard/hostguard"
+	"github.com/AlbinoDrought/creamy-shortener/linker/mapper/multihashmapper"
+	"github.com/AlbinoDrought/creamy-shortener/linker/repo/aferorepo"
+
+	"github.com/spf13/afero"
 
 	"github.com/gorilla/mux"
 )
@@ -18,7 +23,7 @@ var localDataPath string
 var hosts []string
 var hashMode string
 
-var linkRepo linker
+var linkRepo *linker.LinkShortener
 
 func envDefault(name string, backup string) string {
 	found, exists := os.LookupEnv(name)
@@ -39,9 +44,9 @@ func init() {
 func viewLink(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
-	shortenedPart := vars["link"]
+	id := vars["link"]
 
-	link, err := linkRepo.Expand(shortenedPart)
+	link, err := linkRepo.Expand(id)
 	if err != nil {
 		w.WriteHeader(404)
 		w.Write([]byte("link not found"))
@@ -72,20 +77,23 @@ func shortenLink(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = linkRepo.Allowed(parsedLink); err != nil {
+	if !linkRepo.Allowed(parsedLink) {
 		w.WriteHeader(422)
 		w.Write([]byte("link not allowed"))
 		return
 	}
 
-	shortened, err := linkRepo.Shorten(parsedLink)
+	id, err := linkRepo.Shorten(parsedLink)
 	if err != nil {
 		w.WriteHeader(500)
 		w.Write([]byte("unhandled error shortening link"))
 		return
 	}
 
-	w.Write([]byte(shortened))
+	fullURL, _ := url.Parse(appURL)
+	fullURL.Path = "/l/" + id
+
+	w.Write([]byte(fullURL.String()))
 }
 
 func welcome(w http.ResponseWriter, r *http.Request) {
@@ -93,26 +101,16 @@ func welcome(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	if !multihash.ValidCode(multihash.Names[hashMode]) {
-		log.Fatal("invalid hash mode", hashMode)
+	_, err := url.Parse(appURL)
+	if err != nil {
+		log.Fatal("unable to parse app url", appURL, err)
 	}
 
-	linkRepo = makeLinker(localDataPath, appURL, hashMode)
-
-	for _, host := range hosts {
-		parsedHost, err := url.Parse("https://" + host)
-		if err != nil {
-			log.Fatal("could not parse allowed host", host, err)
-		}
-
-		if err := linkRepo.Allow(parsedHost.Host); err != nil {
-			log.Fatal("failed to allow host", host, err)
-		}
-
-		if err := linkRepo.Allowed(parsedHost); err != nil {
-			log.Fatal("tried to allow host but it didn't work", host, err)
-		}
-	}
+	linkRepo = linker.Make(
+		hostguard.Make(hosts),
+		multihashmapper.Must(hashMode),
+		aferorepo.Must(afero.NewBasePathFs(afero.NewOsFs(), localDataPath)),
+	)
 
 	router := makeRouter([]routeDef{
 		routeDef{"GET", "/l/{link}", "ViewLink", viewLink},
