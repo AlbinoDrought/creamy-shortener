@@ -26,5 +26,5 @@ func (r *repo) Set(id string, url *url.URL) error {
 
 // Make an in-memory temporary link repository
 func Make() linker.LinkRepository {
-	return &repo{}
+	return &repo{map[string]*url.URL{}}
 }
