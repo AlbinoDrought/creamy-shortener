@@ -29,7 +29,7 @@ CREAMY_APP_URL="https://shortener.r.albinodrought.com/" \
 CREAMY_DATA_PATH=/data \
 CREAMY_HASH_MODE=sha2-256 \
 CREAMY_HTTP_PORT=80 \
-CREAMY_POPULATED_HOSTS=localhost,google.com \
+CREAMY_POPULATED_HOSTS=localhost,example.com \
 ./creamy-shortener
 ```
 
