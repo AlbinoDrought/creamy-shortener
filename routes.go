@@ -2,6 +2,9 @@ package main
 
 import (
 	"net/http"
+	"os"
+
+	"github.com/gorilla/handlers"
 
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
@@ -24,6 +27,10 @@ func makeRouter(routes []routeDef) *mux.Router {
 			Name(route.Name).
 			Handler(route.Handler)
 	}
+
+	router.Use(func(handler http.Handler) http.Handler {
+		return handlers.CombinedLoggingHandler(os.Stdout, handler)
+	})
 
 	router.Use(func(handler http.Handler) http.Handler {
 		return cors.Default().Handler(handler)
